@@ -31,7 +31,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
 
         BluetoothGattCharacteristic GattSessionRestServerNonce = new BluetoothGattCharacteristic(GattSessionRestServerNonce_UUID,
-                BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ,
+                BluetoothGattCharacteristic.PROPERTY_WRITE |  BluetoothGattCharacteristic.PROPERTY_READ,
                 BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
 
         BluetoothGattCharacteristic GattServerNonce = new BluetoothGattCharacteristic(GATTSERVER_NONCE_UUID,
