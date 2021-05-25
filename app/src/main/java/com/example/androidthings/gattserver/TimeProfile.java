@@ -39,7 +39,7 @@ public class TimeProfile {
     /* Mandatory Client Characteristic Config Descriptor */
     public static UUID CLIENT_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    public static final UUID REALDATA_UUID =  UUID.fromString("00002901-0000-1000-8000-00805f9b34fb");
+    public static final UUID REALDATA_UUID =  UUID.fromString("00001806-0000-1000-8000-00805f9b34fb");
 
     // Adjustment Flags
     public static final byte ADJUST_NONE     = 0x0;
@@ -73,8 +73,8 @@ public class TimeProfile {
                 BluetoothGattCharacteristic.PERMISSION_READ);
 
         BluetoothGattCharacteristic writeRealData = new BluetoothGattCharacteristic(REALDATA_UUID,
-                BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
-                BluetoothGattCharacteristic.PERMISSION_READ_ENCRYPTED_MITM | BluetoothGattCharacteristic.PERMISSION_WRITE  );
+                BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_READ ,
+                BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
         service.addCharacteristic(writeRealData);
         service.addCharacteristic(currentTime);
         service.addCharacteristic(localTime);

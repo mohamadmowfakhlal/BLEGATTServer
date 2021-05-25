@@ -35,6 +35,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.text.format.DateFormat;
@@ -52,6 +54,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.crypto.spec.SecretKeySpec;
 
 public class GattServerActivity extends Activity {
     private static final String TAG = GattServerActivity.class.getSimpleName();
@@ -71,6 +75,7 @@ public class GattServerActivity extends Activity {
     private byte[] key = null;
     private boolean clientauthenticated;
     private byte[] sessionKey = null;
+    private byte[] MAC = null;
     private byte[] restServerNonce;
     private byte[] restEncryptedServerNonce;
     private byte[] deviceID = "0000000000".getBytes();
@@ -106,7 +111,12 @@ public class GattServerActivity extends Activity {
             startServer();
         }
         aesinstance = new AES();
-
+        /*
+        SQLiteDatabase mydatabase = openOrCreateDatabase("securityDatabase",MODE_PRIVATE,null);
+        mydatabase.execSQL("CREATE TABLE IF NOT EXISTS connectedDevices(deviceID VARCHAR,symKey BLOB);");
+        mydatabase.execSQL("INSERT INTO connectedDevices VALUES('0000000000','0000000000000000');");
+        Cursor resultSet = mydatabase.rawQuery("Select * from connectedDevices",null);
+        resultSet.moveToFirst();*/
         try {
             createSecretFile();
             key = readKeyInFile().getBytes();
@@ -359,6 +369,7 @@ public class GattServerActivity extends Activity {
         public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "BluetoothDevice CONNECTED: " + device);
+
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "BluetoothDevice DISCONNECTED: " + device);
                 //Remove device from any active subscriptions
@@ -368,6 +379,7 @@ public class GattServerActivity extends Activity {
         @Override
         public void onMtuChanged(BluetoothDevice device, int mtu) {
             System.out.println("mtu value" +mtu);
+            
 
         }
         @Override
@@ -419,7 +431,7 @@ public class GattServerActivity extends Activity {
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         restEncryptedServerNonce);
-            } else if (TimeProfile.REALDATA_UUID.equals(characteristic.getUuid())) {
+            } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())) {
                 System.out.println("real data encrypted at server side");
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
@@ -433,7 +445,14 @@ public class GattServerActivity extends Activity {
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         key);
-            } else {
+            } else   if(SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
+                System.out.println("MAC  at server side");
+                mBluetoothGattServer.sendResponse(device,
+                        requestId,
+                        BluetoothGatt.GATT_SUCCESS,
+                        0,
+                        "MAC".getBytes());
+            }else {
                 // Invalid characteristic
                 Log.w(TAG, "Invalid Characteristic Read: " + characteristic.getUuid());
                 mBluetoothGattServer.sendResponse(device,
@@ -568,9 +587,14 @@ public class GattServerActivity extends Activity {
                 //restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, sessionKey);
 
 
-            } else if (TimeProfile.REALDATA_UUID.equals(characteristic.getUuid())){
+            } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
                 value = aesinstance.decryptwithpadding(value, sessionKey);
                 System.out.println("write Real data value" + new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
+                String keyString = "theKeyImUsing";
+                SecretKeySpec macKey = new SecretKeySpec(sessionKey, "HmacMD5");
+                //mac.init(macKey);
+                aesinstance.initMAC(macKey);
+                MAC = aesinstance.calculateMAC(value);
             } else if(SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())){
                 //if(authenticated){
                     byte [] decrypteddeviceID = aesinstance.decryptwithpadding(value,sessionKey);
@@ -583,6 +607,10 @@ public class GattServerActivity extends Activity {
                 final String newkey = new String(key,java.nio.charset.StandardCharsets.ISO_8859_1);
                 System.out.println("new key"+newkey);
                 writeKeyInFile(newkey);
+            }else  if(SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
+                if(Arrays.equals(MAC,value)){
+                    System.out.println("integrity is protected"+MAC);
+                }
             }
             //Log.i(TAG, "Read server nonce");
             //AES aesinstance = new AES();
