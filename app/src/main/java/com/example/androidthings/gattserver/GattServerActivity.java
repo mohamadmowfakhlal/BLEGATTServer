@@ -43,7 +43,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
-import com.google.android.things.bluetooth.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class GattServerActivity extends Activity {
     private TextView mLocalTimeView;
     /* Bluetooth API */
     private BluetoothManager mBluetoothManager;
-    private BluetoothConfigManager configManager;
+    //private BluetoothConfigManager configManager;
     private BluetoothGattServer mBluetoothGattServer;
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
     /* Collection of notification subscribers */
@@ -379,8 +378,6 @@ public class GattServerActivity extends Activity {
         @Override
         public void onMtuChanged(BluetoothDevice device, int mtu) {
             System.out.println("mtu value" +mtu);
-            
-
         }
         @Override
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
