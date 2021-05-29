@@ -1,21 +1,19 @@
 package com.example.androidthings.gattserver;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 
 import java.util.UUID;
 
 public class SecurityProfile {
     public static final UUID SECURITY_UUID = UUID.fromString("fb340001-8000-0080-0010-00000d180000");
+    public static final UUID KEY_UUID =  UUID.fromString("fb340002-8000-0080-0010-00000d180000");
     public static final UUID GATTCLIENT_NONCE_UUID = UUID.fromString("fb340003-8000-0080-0010-00000d180000");
     public static final UUID GATTSERVER_NONCE_UUID = UUID.fromString("fb340004-8000-0080-0010-00000d180000");
+    public static final UUID MAC_UUID = UUID.fromString("fb340005-8000-0080-0010-00000d180000");
     public static final UUID REST_SERVER_NONCE_UUID = UUID.fromString("fb340006-8000-0080-0010-00000d180000");
+    public static final UUID GattSessionRestServerNonce_UUID = UUID.fromString("fb340008-8000-0080-0010-00000d180000");
     public static final UUID DEVICEID_UUID =  UUID.fromString("fb340009-8000-0080-0010-00000d180000");
-    public static final UUID KEY_UUID =  UUID.fromString("fb340002-8000-0080-0010-00000d180000");
-    public static final UUID SESSION_UUID = UUID.fromString("fb340005-8000-0080-0010-00000d180000");
-    public static final UUID GattSessionRestServerNonce_UUID = UUID.fromString("fb340007-8000-0080-0010-00000d180000");
-    public static final UUID MAC_UUID = UUID.fromString("fb340008-8000-0080-0010-00000d180000");
     public static final UUID REALDATA_UUID =  UUID.fromString("fb340010-8000-0080-0010-00000d180000");
     public static BluetoothGattService createSecurityService(){
         BluetoothGattService service = new BluetoothGattService(SECURITY_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
@@ -24,7 +22,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ |  BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                  BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY);
 
-        BluetoothGattCharacteristic sessionChar = new BluetoothGattCharacteristic(SESSION_UUID,
+        BluetoothGattCharacteristic sessionChar = new BluetoothGattCharacteristic(MAC_UUID,
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
 
@@ -32,9 +30,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ,
                 BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
 
-        BluetoothGattCharacteristic GattSessionRestServerNonce = new BluetoothGattCharacteristic(GattSessionRestServerNonce_UUID,
-                BluetoothGattCharacteristic.PROPERTY_WRITE |  BluetoothGattCharacteristic.PROPERTY_READ,
-                BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
+
 
         BluetoothGattCharacteristic GattServerNonce = new BluetoothGattCharacteristic(GATTSERVER_NONCE_UUID,
                 BluetoothGattCharacteristic.PROPERTY_READ  | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE,
@@ -48,7 +44,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
 
-        BluetoothGattCharacteristic MAC = new BluetoothGattCharacteristic(MAC_UUID,
+        BluetoothGattCharacteristic MAC = new BluetoothGattCharacteristic(GattSessionRestServerNonce_UUID,
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
         BluetoothGattCharacteristic realData = new BluetoothGattCharacteristic(REALDATA_UUID,
@@ -62,7 +58,7 @@ public class SecurityProfile {
         service.addCharacteristic(keyID);
         service.addCharacteristic(MAC);
         service.addCharacteristic(realData);
-        service.addCharacteristic(GattSessionRestServerNonce);
+        //service.addCharacteristic(GattSessionRestServerNonce);
         return service;
     }
 }

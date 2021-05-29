@@ -35,8 +35,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.text.format.DateFormat;
@@ -73,7 +71,7 @@ public class GattServerActivity extends Activity {
 
     private byte[] key = null;
     private boolean clientauthenticated;
-    private byte[] sessionKey = null;
+    private byte[] sessionKey = new byte[16];
     private byte[] MAC = null;
     private byte[] restServerNonce;
     private byte[] restEncryptedServerNonce;
@@ -382,22 +380,7 @@ public class GattServerActivity extends Activity {
         @Override
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
                                                 BluetoothGattCharacteristic characteristic) {
-            long now = System.currentTimeMillis();
-            if (TimeProfile.CURRENT_TIME.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Read CurrentTime");
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        0,
-                        TimeProfile.getExactTime(now, TimeProfile.ADJUST_NONE));
-            } else if (TimeProfile.LOCAL_TIME_INFO.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Read LocalTimeInfo");
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        0,
-                        TimeProfile.getLocalTimeInfo(now));
-            } else if (SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())) {
+        if (SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())) {
                 Log.i(TAG, "Read deviceID");
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
@@ -413,15 +396,7 @@ public class GattServerActivity extends Activity {
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         encryptedGattServerNonce);
-            } else if (SecurityProfile.GATTCLIENT_NONCE_UUID.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Read client nonce");
-                byte[] encryptedClientNonce = aesinstance.encrypt(ReceivedClientNonce, key);
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        0,
-                        encryptedClientNonce);
-            } else if (SecurityProfile.REST_SERVER_NONCE_UUID.equals(characteristic.getUuid())) {
+            }else if (SecurityProfile.REST_SERVER_NONCE_UUID.equals(characteristic.getUuid())) {
                 System.out.println("rest server nonce encrypted at server side" + restEncryptedServerNonce.toString());
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
@@ -442,14 +417,25 @@ public class GattServerActivity extends Activity {
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         key);
-            } else   if(SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
-                System.out.println("MAC  at server side");
+            } else   if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
+                System.out.println("GattSessionRestServerNonce_UUID  at server side");
+                //encrypt client nonce
+                byte[] encryptedClientNonce = aesinstance.encrypt(ReceivedClientNonce, key);
+                //generate a server nonce
+                GattServerNonce = generateNonce();
+                //encrypt the server nonce
+                byte[] encryptedGattServerNonce = aesinstance.encrypt(GattServerNonce, key);
+                byte[] concatenatednonces = new byte[encryptedClientNonce.length + encryptedClientNonce.length+deviceID.length];
+                System.arraycopy(encryptedClientNonce, 0, concatenatednonces, 0, encryptedClientNonce.length);
+                System.arraycopy( encryptedGattServerNonce, 0, concatenatednonces, encryptedClientNonce.length,  encryptedGattServerNonce.length);
+                System.arraycopy( deviceID, 0, concatenatednonces, encryptedClientNonce.length+encryptedGattServerNonce.length,  deviceID.length);
+
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
                         BluetoothGatt.GATT_SUCCESS,
                         0,
-                        "MAC".getBytes());
-            }else {
+                        concatenatednonces);
+              } else{
                 // Invalid characteristic
                 Log.w(TAG, "Invalid Characteristic Read: " + characteristic.getUuid());
                 mBluetoothGattServer.sendResponse(device,
@@ -528,70 +514,10 @@ public class GattServerActivity extends Activity {
             if (SecurityProfile.GATTCLIENT_NONCE_UUID.equals(characteristic.getUuid())) {
                 System.out.println("client nonce is received" + value.toString());
                 ReceivedClientNonce = value;
-                // AES aesinstance = new AES();
-                // byte[] encryptednonce = aesinstance.encrypt(value,key);
-                //characteristic.setValue(encryptednonce);
-                //mBluetoothGattServer.notifyCharacteristicChanged(device, characteristic, false);
-                //characteristic.setValue(Cnonce);
-            } else if (SecurityProfile.GATTSERVER_NONCE_UUID.equals(characteristic.getUuid())) {
-                if (Arrays.equals(GattServerNonce, value)) {
-                    clientauthenticated = true;
-                    System.out.println("server are sure about the client is real one");
-                    // I suggest to change the key in gatt server and rest server every time we connect so we have a fresh key that change autmatically at
-                    // rest server and gatt client
+            }else if (SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
+                if(Arrays.equals(MAC,value)){
+                    System.out.println("integrity is protected"+MAC);
                 }
-                /*
-                if (responseNeeded) {
-                    mBluetoothGattServer.sendResponse(device, requestId, 0,offset , value);
-                }*/
-            } else if (SecurityProfile.SESSION_UUID.equals(characteristic.getUuid())) {
-                // if (clientauthenticated && sessionKey.equals(null)) {
-                sessionKey = aesinstance.decrypt(value, key);
-                System.out.println("does  generate session key");
-                //clientauthenticated = false;
-                //}else if(clientauthenticated && !sessionKey.equals(null)){
-                //  restServerNonce = aesinstance.decrypt(value,key);
-                //restEncryptedServerNonce = aesinstance.encrypt(restServerNonce,sessionKey);
-                // mBluetoothGattServer.sendResponse(device, requestId, 0,offset , restEncryptedServerNonce);
-                //}
-            } else if (SecurityProfile.REST_SERVER_NONCE_UUID.equals(characteristic.getUuid())) {
-                System.out.println("rest server nonce ");
-                restServerNonce = aesinstance.decrypt(value, key);
-                restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, sessionKey);
-            } else if (SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
-                //byte[] concatenatednonces = new byte[serverDecryptedNonceBytes.length + encryptedSessionKeyBytes.length];
-                byte[] GNONCE = new byte[16];
-                byte[] SessionKey = new byte[16];
-                byte[] RestNONCE = new byte[16];;
-                System.arraycopy(value, 0, GNONCE, 0, 16);
-                System.arraycopy(value, 16, SessionKey, 0, 16);
-                System.arraycopy(value, 32, RestNONCE, 0, 16);
-                //System.arraycopy( encryptedSessionKeyBytes, 0, concatenatednonces, serverDecryptedNonceBytes.length,  encryptedSessionKeyBytes.length);
-                //System.arraycopy( encryptedServerNonceBytes, 0, concatenatednonces, serverDecryptedNonceBytes.length+encryptedSessionKeyBytes.length,  encryptedServerNonceBytes.length);
-
-
-                //if (Arrays.equals(GattServerNonce, value)) {
-                  //  clientauthenticated = true;
-                    //System.out.println("server are sure about the client is real one");
-                    // I suggest to change the key in gatt server and rest server every time we connect so we have a fresh key that change autmatically at
-                    // rest server and gatt client
-                //}
-                //sessionKey = aesinstance.decrypt(value, key);
-                //System.out.println("does  generate session key");
-
-                //System.out.println("rest server nonce ");
-                //restServerNonce = aesinstance.decrypt(value, key);
-                //restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, sessionKey);
-
-
-            } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
-                value = aesinstance.decryptwithpadding(value, sessionKey);
-                System.out.println("write Real data value" + new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
-                String keyString = "theKeyImUsing";
-                SecretKeySpec macKey = new SecretKeySpec(sessionKey, "HmacMD5");
-                //mac.init(macKey);
-                aesinstance.initMAC(macKey);
-                MAC = aesinstance.calculateMAC(value);
             } else if(SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())){
                 //if(authenticated){
                     byte [] decrypteddeviceID = aesinstance.decryptwithpadding(value,sessionKey);
@@ -604,18 +530,31 @@ public class GattServerActivity extends Activity {
                 final String newkey = new String(key,java.nio.charset.StandardCharsets.ISO_8859_1);
                 System.out.println("new key"+newkey);
                 writeKeyInFile(newkey);
-            }else  if(SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
-                if(Arrays.equals(MAC,value)){
-                    System.out.println("integrity is protected"+MAC);
+            }else  if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
+                byte[] GATTNONCE = new byte[16];
+                byte[] RestNONCE = new byte[16];;
+                System.arraycopy(value, 0, GATTNONCE, 0, 16);
+                System.arraycopy(value, 16, sessionKey, 0, 16);
+                System.arraycopy(value, 32, RestNONCE, 0, 16);
+                System.out.println("rest server nonce ");
+                sessionKey = aesinstance.decrypt(sessionKey, key);
+                System.out.println("does  generate session key");
+                restServerNonce = aesinstance.decrypt(RestNONCE, key);
+                restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, sessionKey);
+                if (Arrays.equals(GattServerNonce, GATTNONCE)) {
+                    clientauthenticated = true;
+                    System.out.println("server are sure about the client is real one");
+                    // I suggest to change the key in gatt server and rest server every time we connect so we have a fresh key that change autmatically at
+                    // rest server and gatt client
                 }
+
+            } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
+                value = aesinstance.decryptwithpadding(value, sessionKey);
+                System.out.println("write Real data value" + new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
+                SecretKeySpec macKey = new SecretKeySpec(sessionKey, "HmacMD5");
+                aesinstance.initMAC(macKey);
+                MAC = aesinstance.calculateMAC(value);
             }
-            //Log.i(TAG, "Read server nonce");
-            //AES aesinstance = new AES();
-            //byte[] Snonce = generateNonce();
-            //byte[] concatenatednonces = new byte[Snonce.length + value.length];
-            //System.arraycopy(Snonce, 0, concatenatednonces, 0, Snonce.length);
-            //System.arraycopy( value, 0, concatenatednonces, Snonce.length,  value.length);
-            //byte[] encryptednonce = aesinstance.encrypt(concatenatednonces,key);
 
         }        // util to print bytes in hex
     };
@@ -630,13 +569,6 @@ public class GattServerActivity extends Activity {
         try {
             // catches IOException below
             final String key = new String("0000000000000000");
-
-            /* We have to use the openFileOutput()-method
-             * the ActivityContext provides, to
-             * protect your file from others and
-             * This is done for security-reasons.
-             * We chose MODE_WORLD_READABLE, because
-             *  we have nothing to hide in our file */
             FileOutputStream fOut = openFileOutput("secretfile.txt",
                     MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fOut);
