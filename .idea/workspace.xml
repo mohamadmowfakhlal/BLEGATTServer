@@ -19,6 +19,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.1/taskHistory/fileSnapshots.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.1/taskHistory/fileSnapshots.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.1/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.1/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.1/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.1/taskHistory/taskHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/GattServerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/GattServerActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/SecurityProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/SecurityProfile.java" afterDir="false" />
@@ -28,7 +30,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="4JPNU19A21119009" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_2_API_30" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -63,7 +65,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="4JPNU19A21119009" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2021-05-29T15:36:55.886Z" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2021-06-05T15:51:54.028Z" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
@@ -172,42 +174,42 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="662" y="178" key="AndroidProcessChooserDialog/0.0.1536.824@0.0.1536.824" timestamp="1620398254826" />
-    <state x="587" y="167" width="703" height="516" key="FileChooserDialogImpl" timestamp="1621825909501">
+    <state x="587" y="167" width="703" height="516" key="FileChooserDialogImpl" timestamp="1622904347321">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="587" y="167" width="703" height="516" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1621825909501" />
-    <state width="1491" height="225" key="GridCell.Tab.0.bottom" timestamp="1622303329505">
+    <state x="587" y="167" width="703" height="516" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1622904347321" />
+    <state width="1491" height="264" key="GridCell.Tab.0.bottom" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.0.center" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.0.center" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.0.left" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.0.left" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.0.right" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.0.right" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.1.bottom" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.1.bottom" timestamp="1622917066939">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.1.center" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1622917066939" />
+    <state width="1491" height="264" key="GridCell.Tab.1.center" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.1.left" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.1.left" timestamp="1622917066938">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
-    <state width="1491" height="225" key="GridCell.Tab.1.right" timestamp="1622303329505">
+    <state width="1491" height="264" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1622917066938" />
+    <state width="1491" height="264" key="GridCell.Tab.1.right" timestamp="1622917066939">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1491" height="225" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1622303329505" />
+    <state width="1491" height="264" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1622917066939" />
     <state x="277" y="55" key="SettingsEditor" timestamp="1621688746620">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -220,10 +222,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="93" y="93" width="1350" height="638" key="com.intellij.history.integration.ui.views.SelectionHistoryDialog/0.0.1536.824@0.0.1536.824" timestamp="1618682715756" />
-    <state x="503" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1622303358269">
+    <state x="503" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1622903935080">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="503" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1622303358269" />
+    <state x="503" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1622903935080" />
     <state x="338" y="148" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1617191655040">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -242,13 +244,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/GattServerActivity.java</url>
-          <line>345</line>
+          <line>349</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/GattServerActivity.java</url>
-          <line>116</line>
+          <line>120</line>
           <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/androidthings/gattserver/GattServerActivity.java</url>
+          <line>583</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
