@@ -392,30 +392,9 @@ public class GattServerActivity extends Activity {
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         deviceID);
-            } else if (SecurityProfile.GATTSERVER_NONCE_UUID.equals(characteristic.getUuid())) {
-                Log.i(TAG, "Read GATT server nonce");
-                GattServerNonce = generateNonce();
-                byte[] encryptedGattServerNonce = aesinstance.encrypt(GattServerNonce, key);
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        0,
-                        encryptedGattServerNonce);
-            }else if (SecurityProfile.SESSIONNUMBER_UUID.equals(characteristic.getUuid())) {
-            /*mBluetoothGattServer.sendResponse(device,
-                    requestId,
-                    BluetoothGatt.GATT_SUCCESS,
-                    0, index.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1)
-            );*/
+            } else if (SecurityProfile.SESSIONNUMBER_UUID.equals(characteristic.getUuid())) {
         }
-        else if (SecurityProfile.REST_SERVER_NONCE_UUID.equals(characteristic.getUuid())) {
-                /*System.out.println("rest server nonce encrypted at server side" + restEncryptedServerNonce.toString());
-                mBluetoothGattServer.sendResponse(device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        0,
-                        restEncryptedServerNonce);*/
-            } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())) {
+         else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())) {
                 System.out.println("real data encrypted at server side");
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
@@ -529,7 +508,7 @@ public class GattServerActivity extends Activity {
                 ReceivedClientNonce = value;
             }else if (SecurityProfile.MAC_UUID.equals(characteristic.getUuid())) {
                 if(Arrays.equals(MAC,value)){
-                    System.out.println("integrity is protected"+MAC);
+                    System.out.println("Data is authenticated");
                 }
             } else if(SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())){
                 //if(authenticated){
@@ -545,36 +524,41 @@ public class GattServerActivity extends Activity {
                 writeKeyInFile(newkey);
             }else  if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
                 byte[] GATTNONCE = new byte[16];
-                byte[] RestNONCE = new byte[16];
+                //byte[] RestNONCE = new byte[16];
                 System.arraycopy(value, 0, GATTNONCE, 0, 16);
                 System.arraycopy(value, 16, sessionKey, 0, 16);
                 //System.arraycopy(value, 32, RestNONCE, 0, 16);
                 //System.arraycopy(value, 48, deviceadd, 0, 16);
-                System.out.println("rest server nonce ");
-                sessionKey = aesinstance.decrypt(sessionKey, key);
-                //int sessionNumber = masterSessionKeys.size()+1;
-                //index = String.valueOf(sessionNumber);
-                if(!masterSessionKeys.containsKey(device))
-                    masterSessionKeys.put(device,new String(sessionKey,java.nio.charset.StandardCharsets.ISO_8859_1));
-                //System.out.println("does  generate session key"+sessionKey+index);
-                //restServerNonce = aesinstance.decrypt(RestNONCE, key);
-                //restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, masterSessionKeys.get(device1));
+                //System.out.println("rest server nonce ");
                 if (Arrays.equals(GattServerNonce, GATTNONCE)) {
                     clientauthenticated = true;
                     System.out.println("server are sure about the client is real one");
                     // I suggest to change the key in gatt server and rest server every time we connect so we have a fresh key that change autmatically at
                     // rest server and gatt client
+                    sessionKey = aesinstance.decrypt(sessionKey, key);
+                    //int sessionNumber = masterSessionKeys.size()+1;
+                    //index = String.valueOf(sessionNumber);
+                    if(!masterSessionKeys.containsKey(device))
+                        masterSessionKeys.put(device,new String(sessionKey,java.nio.charset.StandardCharsets.ISO_8859_1));
+                    //System.out.println("does  generate session key"+sessionKey+index);
+                    //restServerNonce = aesinstance.decrypt(RestNONCE, key);
+                    //restEncryptedServerNonce = aesinstance.encrypt(restServerNonce, masterSessionKeys.get(device1));
+
+                }else{
+                    System.out.println("fake client");
+                    //disconnect it
                 }
 
+
             } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
-                value = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
-                for (Map.Entry<BluetoothDevice,String> entry : masterSessionKeys.entrySet()) {
+                //value = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+                /*for (Map.Entry<BluetoothDevice,String> entry : masterSessionKeys.entrySet()) {
                     BluetoothDevice key = entry.getKey();
                     System.out.println(""+key);
                     String value1 = entry.getValue();
                     System.out.println(""+value1);
                     // do stuff
-                }
+                }*/
                 //System.out.println("write Real data value" + masterSessionKeys.get(device));
                 SecretKeySpec macKey = new SecretKeySpec(masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1), "HmacMD5");
                 aesinstance.initMAC(macKey);

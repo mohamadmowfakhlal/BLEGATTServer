@@ -23,7 +23,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ |  BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                  BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY);
 
-        BluetoothGattCharacteristic sessionChar = new BluetoothGattCharacteristic(MAC_UUID,
+        BluetoothGattCharacteristic MAC = new BluetoothGattCharacteristic(MAC_UUID,
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE |  BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ );
 
@@ -45,7 +45,7 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
 
-        BluetoothGattCharacteristic MAC = new BluetoothGattCharacteristic(GattSessionRestServerNonce_UUID,
+        BluetoothGattCharacteristic GattSessionRestServerNonce = new BluetoothGattCharacteristic(GattSessionRestServerNonce_UUID,
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
 
@@ -57,12 +57,12 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
         service.addCharacteristic(clientnonce);
-        service.addCharacteristic(GattServerNonce);
-        service.addCharacteristic(sessionChar);
-        service.addCharacteristic(restServerNonce);
+        //service.addCharacteristic(GattServerNonce);
+        service.addCharacteristic(MAC);
+        //service.addCharacteristic(restServerNonce);
         service.addCharacteristic(deviceID);
         service.addCharacteristic(keyID);
-        service.addCharacteristic(MAC);
+        service.addCharacteristic(GattSessionRestServerNonce);
         service.addCharacteristic(realData);
         service.addCharacteristic(sessionNumber);
         //service.addCharacteristic(GattSessionRestServerNonce);
