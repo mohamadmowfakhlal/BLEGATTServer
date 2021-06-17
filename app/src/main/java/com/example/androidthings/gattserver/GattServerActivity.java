@@ -512,16 +512,20 @@ public class GattServerActivity extends Activity {
                 }
             } else if(SecurityProfile.DEVICEID_UUID.equals(characteristic.getUuid())){
                 //if(authenticated){
-                    byte [] decrypteddeviceID = aesinstance.decryptwithpadding(value,masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
-                    deviceID= decrypteddeviceID;
+                if(masterSessionKeys.containsKey(device)) {
+                    byte[] decrypteddeviceID = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+                    deviceID = decrypteddeviceID;
                     characteristic.setValue(deviceID);
+                }
                 //}
             }else  if(SecurityProfile.KEY_UUID.equals(characteristic.getUuid())){
-                byte [] decryptedKey= aesinstance.decrypt(value,masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
-                key = decryptedKey;
-                final String newkey = new String(key,java.nio.charset.StandardCharsets.ISO_8859_1);
-                System.out.println("new key"+newkey);
-                writeKeyInFile(newkey);
+                if(masterSessionKeys.containsKey(device)) {
+                    byte [] decryptedKey= aesinstance.decrypt(value,masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+                    key = decryptedKey;
+                    final String newkey = new String(key,java.nio.charset.StandardCharsets.ISO_8859_1);
+                    System.out.println("new key"+newkey);
+                    writeKeyInFile(newkey);
+                }
             }else  if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
                 byte[] GATTNONCE = new byte[16];
                 //byte[] RestNONCE = new byte[16];
@@ -551,19 +555,21 @@ public class GattServerActivity extends Activity {
 
 
             } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
-                //value = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
-                /*for (Map.Entry<BluetoothDevice,String> entry : masterSessionKeys.entrySet()) {
-                    BluetoothDevice key = entry.getKey();
-                    System.out.println(""+key);
-                    String value1 = entry.getValue();
-                    System.out.println(""+value1);
-                    // do stuff
-                }*/
-                //System.out.println("write Real data value" + masterSessionKeys.get(device));
-                SecretKeySpec macKey = new SecretKeySpec(masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1), "HmacMD5");
-                aesinstance.initMAC(macKey);
-                MAC = aesinstance.calculateMAC(value);
-                System.out.println( new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
+                if(masterSessionKeys.containsKey(device)) {
+                    value = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+                    for (Map.Entry<BluetoothDevice, String> entry : masterSessionKeys.entrySet()) {
+                        BluetoothDevice key = entry.getKey();
+                        System.out.println("" + key);
+                        String value1 = entry.getValue();
+                        System.out.println("" + value1);
+                        // do stuff
+                    }
+                    //System.out.println("write Real data value" + masterSessionKeys.get(device));
+                    SecretKeySpec macKey = new SecretKeySpec(masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1), "HmacMD5");
+                    aesinstance.initMAC(macKey);
+                    MAC = aesinstance.calculateMAC(value);
+                    System.out.println(new String(value, java.nio.charset.StandardCharsets.ISO_8859_1));
+                }
             }else if (SecurityProfile.SESSIONNUMBER_UUID.equals(characteristic.getUuid())) {
                 //index = new String(value,java.nio.charset.StandardCharsets.ISO_8859_1);
             }
