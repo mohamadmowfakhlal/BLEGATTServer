@@ -68,6 +68,7 @@ public class GattServerActivity extends Activity {
     /* Collection of notification subscribers */
     private Set<BluetoothDevice> mRegisteredDevices = new HashSet<>();
     private byte[] ReceivedClientNonce = null;
+    private byte[] encryptedservernonce;
     private byte[] GattServerNonce = null;
     AES aesinstance;
     private String index;
@@ -411,22 +412,28 @@ public class GattServerActivity extends Activity {
             } else   if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
                 System.out.println("GattSessionRestServerNonce_UUID  at server side");
                 //encrypt client nonce
-                byte[] encryptedClientNonce = aesinstance.encrypt(ReceivedClientNonce, key);
+                //byte[] encryptedClientNonce = aesinstance.encrypt(ReceivedClientNonce, key);
                 //generate a server nonce
                 GattServerNonce = generateNonce();
                 //encrypt the server nonce
-                byte[] encryptedGattServerNonce = aesinstance.encrypt(GattServerNonce, key);
-                byte[] concatenatednonces = new byte[encryptedClientNonce.length + encryptedGattServerNonce.length+deviceID.length];
-                System.arraycopy(encryptedClientNonce, 0, concatenatednonces, 0, encryptedClientNonce.length);
-                System.arraycopy( encryptedGattServerNonce, 0, concatenatednonces, encryptedClientNonce.length,  encryptedGattServerNonce.length);
-                System.arraycopy( deviceID, 0, concatenatednonces, encryptedClientNonce.length+encryptedGattServerNonce.length,  deviceID.length);
+                //byte[] encryptedGattServerNonce = aesinstance.encrypt(GattServerNonce, key);
+                byte[] concatenatednonces = new byte[ GattServerNonce.length+deviceID.length];
+                //System.arraycopy(encryptedClientNonce, 0, concatenatednonces, 0, encryptedClientNonce.length);
+                System.arraycopy( GattServerNonce, 0, concatenatednonces, 0,  GattServerNonce.length);
+                System.arraycopy( deviceID, 0, concatenatednonces, GattServerNonce.length,  deviceID.length);
 
                 mBluetoothGattServer.sendResponse(device,
                         requestId,
                         BluetoothGatt.GATT_SUCCESS,
                         0,
                         concatenatednonces);
-              }
+              }else if (SecurityProfile.GATTSERVER_NONCE_UUID.equals(characteristic.getUuid())) {
+             mBluetoothGattServer.sendResponse(device,
+                    requestId,
+                    BluetoothGatt.GATT_SUCCESS,
+                    0,
+                    encryptedservernonce);
+             }
               else{
                 // Invalid characteristic
                 Log.w(TAG, "Invalid Characteristic Read: " + characteristic.getUuid());
@@ -528,18 +535,20 @@ public class GattServerActivity extends Activity {
                 }
             }else  if(SecurityProfile.GattSessionRestServerNonce_UUID.equals(characteristic.getUuid())) {
                 byte[] GATTNONCE = new byte[16];
-                //byte[] RestNONCE = new byte[16];
+                byte[] RestNONCE = new byte[16];
                 System.arraycopy(value, 0, GATTNONCE, 0, 16);
                 System.arraycopy(value, 16, sessionKey, 0, 16);
-                //System.arraycopy(value, 32, RestNONCE, 0, 16);
+                System.arraycopy(value, 32, RestNONCE, 0, 16);
                 //System.arraycopy(value, 48, deviceadd, 0, 16);
                 //System.out.println("rest server nonce ");
-                if (Arrays.equals(GattServerNonce, GATTNONCE)) {
+                if (Arrays.equals(aesinstance.decrypt(GATTNONCE, key), GattServerNonce)) {
                     clientauthenticated = true;
                     System.out.println("server are sure about the client is real one");
                     // I suggest to change the key in gatt server and rest server every time we connect so we have a fresh key that change autmatically at
                     // rest server and gatt client
                     sessionKey = aesinstance.decrypt(sessionKey, key);
+                    byte[] decyptedServerNonce = aesinstance.decrypt(RestNONCE, key);
+                    encryptedservernonce = aesinstance.encrypt(decyptedServerNonce, sessionKey);
                     //int sessionNumber = masterSessionKeys.size()+1;
                     //index = String.valueOf(sessionNumber);
                     if(!masterSessionKeys.containsKey(device))
@@ -552,8 +561,6 @@ public class GattServerActivity extends Activity {
                     System.out.println("fake client");
                     //disconnect it
                 }
-
-
             } else if (SecurityProfile.REALDATA_UUID.equals(characteristic.getUuid())){
                 if(masterSessionKeys.containsKey(device)) {
                     value = aesinstance.decryptwithpadding(value, masterSessionKeys.get(device).getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));

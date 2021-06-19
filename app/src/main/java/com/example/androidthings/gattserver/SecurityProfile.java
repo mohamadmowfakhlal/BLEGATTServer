@@ -57,9 +57,9 @@ public class SecurityProfile {
                 BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_READ ,
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE  );
         service.addCharacteristic(clientnonce);
-        //service.addCharacteristic(GattServerNonce);
+        service.addCharacteristic(GattServerNonce);
         service.addCharacteristic(MAC);
-        //service.addCharacteristic(restServerNonce);
+       // service.addCharacteristic(restServerNonce);
         service.addCharacteristic(deviceID);
         service.addCharacteristic(keyID);
         service.addCharacteristic(GattSessionRestServerNonce);
